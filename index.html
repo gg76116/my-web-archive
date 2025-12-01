@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沐林&沐靈美學工作室 - 預約表單</title>
+    
+    <!-- 此版本所有樣式皆已內嵌 CSS，確保排版穩定 -->
+    
+    <style>
+        /* 載入 Noto Serif TC (思源宋體) */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Inter:wght@400;600;700&display=swap');
+
+        /* 全局基礎設定 - 參考五行金水 (白/藍/灰) */
+        :root {
+            --color-primary: #0d47a1; /* 深藍色 (水) */
+            --color-secondary: #1565c0; /* 中藍色 (水) */
+            --color-background-light: #F5F7FA; /* 淺白/灰 (金) */
+            --color-background-dark: #E0F7FA; /* 淺藍 (水) */
+            --color-text: #333;
+            --color-border: #b3e5fc;
+            --color-warning: #854d0e;
+        }
+
+        body {
+            /* 柔和淺藍到淺白漸變背景 */
+            background: linear-gradient(to bottom, var(--color-background-light), var(--color-background-dark)); 
+            background-attachment: fixed; 
+            font-family: 'Noto Serif TC', 'Inter', sans-serif; 
+            color: var(--color-text); 
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        /* 響應式佈局：容器居中，最大寬度 */
+        .container-card {
+            max-width: 960px; /* max-w-4xl */
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1.5rem; /* p-6 for mobile */
+            background-color: white; 
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+            border: 1px solid var(--color-background-dark);
+        }
+
+        @media (min-width: 768px) {
+            .container-card {
+                padding: 2.5rem; /* p-10 for desktop */
+            }
+        }
+
+        /* 標題區塊 */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem; /* mb-10 */
+        }
+        
+        .title {
+            color: #1f2937; 
+            font-size: 2rem; /* text-3xl */
+            font-weight: 700;
+            margin-bottom: 0.5rem; 
+            letter-spacing: 0.05em; 
+        }
+
+        @media (min-width: 768px) {
+            .title {
+                font-size: 2.25rem; /* md:text-4xl */
+            }
+        }
+
+        /* 項目選擇區塊 */
+        .selector-section {
+            margin-bottom: 2.5rem;
+            padding: 1rem;
+            border: 1px solid #b3e5fc; 
+            border-radius: 0.5rem; 
+        }
+
+        .selector-title {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        @media (min-width: 768px) {
+            .selector-title {
+                font-size: 1.5rem; /* md:text-2xl */
+            }
+        }
+        
+        .mode-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        @media (min-width: 640px) {
+            .mode-selector {
+                flex-direction: row;
+            }
+        }
+        
+        /* 主要按鈕樣式 */
+        .btn-primary {
+            background-color: var(--color-primary); 
+            color: white;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-secondary);
+        }
+
+        /* 表單區塊 */
+        .form-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid #b3e5fc; 
+            border-radius: 0.5rem; 
+            background-color: #f9fafb; 
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-border);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #03a9f4;
+            box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.2);
+        }
+
+        /* 訊息視窗樣式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    
+    <div class="container-card">
+
+        <!-- 標題區塊 -->
+        <header class="header">
+            <h1 class="title">沐林&沐靈美學工作室</h1>
+            <p style="font-size: 1.25rem; font-weight: 300; color: #4b5563;">線上預約表單 (Appointment Form)</p>
+        </header>
+
+        <!-- 預約項目選擇區塊 -->
+        <section class="selector-section">
+            <h2 class="selector-title">請選擇預約項目</h2>
+            
+            <div id="mode-selector" class="mode-selector">
+                <!-- 熱蠟除毛按鈕 -->
+                <button 
+                    onclick="selectMode('depilation')" 
+                    class="btn-primary">
+                    熱蠟除毛預約
+                </button>
+                
+                <!-- 美學項目按鈕 -->
+                <button 
+                    onclick="selectMode('beauty')" 
+                    class="btn-primary">
+                    美學項目預約
+                </button>
+            </div>
+            
+            <p id="mode-feedback" style="text-align: center; margin-top: 1rem; font-size: 1.125rem; font-weight: 500; color: #4b5563;">請點擊上方按鈕選擇您的預約類型。</p>
+        </section>
+
+        <!-- 預約資訊表格區塊 (預設隱藏) -->
+        <section id="appointment-form" class="form-section hidden">
+            <h2 class="title" style="font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #d1d5db;">預約請填寫以下表格</h2>
+            
+            <form id="line-form" onsubmit="submitForm(event)">
+                
+                <!-- 姓名 -->
+                <div class="input-group">
+                    <label for="name" class="input-label">姓名 Name</label>
+                    <input type="text" id="name" name="name" placeholder="請填寫您的姓名" required>
+                </div>
+
+                <!-- 電話 -->
+                <div class="input-group">
+                    <label for="phone" class="input-label">電話 Phone</label>
+                    <input type="text" id="phone" name="phone" placeholder="09XX-XXX-XXX" required>
+                </div>
+
+                <!-- 預約日期/時間 -->
+                <div class="input-group">
+                    <label for="date_time" class="input-label">日期/時間 Date/Time (時段越多越好)</label>
+                    <textarea id="date_time" name="date_time" rows="3" placeholder="e.g. 1/15 (五) 14:00 或 15:30；1/16 (六) 早上" required></textarea>
+                </div>
+                
+                <!-- 施作項目/部位 (根據模式切換內容) -->
+                <div id="service-input" class="input-group">
+                    <!-- JavaScript 會在這裡插入對應的欄位內容 -->
+                </div>
+
+                <!-- 是否為孕媽咪 -->
+                <div id="pregnancy-check" class="input-group hidden" style="padding: 1rem; background-color: #fffbe6; border: 1px solid #fde68a; border-radius: 0.5rem; margin-top: 1.5rem;">
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" id="is_pregnant" name="is_pregnant" style="height: 1rem; width: 1rem; color: var(--color-primary); border-radius: 0.25rem;">
+                        <label for="is_pregnant" style="margin-left: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--color-warning);">
+                            是否為孕媽咪？ (很重要，請如實告知)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 備註 -->
+                <div class="input-group" style="margin-top: 1.5rem;">
+                    <label for="notes" class="input-label">備註 Notes</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="e.g. 第一次除毛/其他皮膚狀況/疑問需求" ></textarea>
+                </div>
+
+                <!-- 提交按鈕 -->
+                <button type="submit" id="submit-btn" class="btn-primary" style="margin-top: 1.5rem; font-size: 1.25rem; font-weight: 600;">
+                    點此發送預約訊息至 Line
+                </button>
+            </form>
+        </section>
+
+        <!-- 訊息彈出視窗 (用於替代 alert()) -->
+        <div id="message-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="modal-title" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-primary);">訊息已生成</h3>
+                <p id="modal-content-text" style="margin-bottom: 1rem; color: #4b5563;">
+                    請點擊下方按鈕<strong style="color: var(--color-primary);">一鍵複製</strong>，並手動貼上發送至 Line 官方帳號。
+                </p>
+                <!-- 顯示生成的訊息 -->
+                <textarea id="message-text-area" rows="8" readonly style="width: 100%; border: 1px solid #ccc; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.875rem; margin-bottom: 1rem;"></textarea>
+                
+                <!-- 新增複製按鈕 -->
+                <button onclick="copyMessage()" class="btn-primary" style="width: 100%; padding: 0.5rem 1re
