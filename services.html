@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>沐林&沐靈 - 專屬預約</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel (Must be before the script tag that uses JSX) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Noto Sans TC (For Traditional Chinese) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base Styling and Font */
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f9ff; /* Lightest Blue */
+            overscroll-behavior-y: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera (for horizontal date scroll) */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Icy Snowflake Background Animation (Soft Blue Gradient) */
+        .snowflake-bg {
+            /* Soft light blue gradient: Sky-100 to White/Light Blue */
+            background: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 100%); 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 0; }
+            10% { opacity: 0.8; }
+            100% { transform: translateY(110vh) translateX(20px); opacity: 0.3; }
+        }
+
+        /* Glassmorphism for the tab container (Japanese Minimalism: clean, blurred) */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- Icons (Using simple SVG paths for Lucide icons) ---
+        const Icon = ({ name, size = 20, color = "currentColor", className="" }) => {
+            const icons = {
+                check: <polyline points="20 6 9 17 4 12" />,
+                copy: (<><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></>),
+                user: (<><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></>),
+                sparkles: <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>,
+                info: (<><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></>),
+                // Custom Icon for Modal - Cute Star/Sparkle
+                heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+            };
+
+            return (
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width={size} 
+                    height={size} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke={color} 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className={className}
+                >
+                    {icons[name] || icons.info}
+                </svg>
+            );
+        };
+        
+        // --- Background Component ---
+        const Snowflakes = () => {
+            const flakes = Array.from({ length: 20 }).map((_, i) => ({
+                id: i,
+                left: Math.random() * 100 + '%',
+                animationDuration: Math.random() * 5 + 10 + 's',
+                animationDelay: Math.random() * 5 + 's',
+                width: Math.random() * 4 + 2 + 'px',
+                height: Math.random() * 4 + 2 + 'px',
+            }));
+
+            return (
+                <div className="snowflake-bg">
+                    {flakes.map(flake => (
+                        <div 
+                            key={flake.id} 
+                            className="snowflake"
+                            style={{
+                                left: flake.left,
+                                animationDuration: flake.animationDuration,
+                                animationDelay: flake.animationDelay,
+                                width: flake.width,
+                                height: flake.height
+                            }}
+                        />
+                    ))}
+                </div>
+            );
+        };
+
+        // --- Main App Component ---
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('hair'); // 'hair' or 'beauty'
+            const [copied, setCopied] = useState(false);
+            const [showModal, setShowModal] = useState(false);
+            
+            // Form State
+            const [formData, setFormData] = useState({
+                name: '',
+                phone: '',
+                date: '',
+                time: '',
+                item: '',
+                pregnant: '否',
+                pregnantWeeks: '',
+                maskAddon: false,
+                coolingWax: '否', // 是/否
+                notes: ''
+            });
+
+            // Date Generation (Next 14 days)
+            const getNextDays = () => {
+                const days = [];
+                const today = new Date();
+                const weekDays = ['日', '一', '二', '三', '四', '五', '六']; // Abbreviated Weekday Names
+                
+                for (let i = 0; i < 14; i++) {
+                    const d = new Date(today);
+                    d.setDate(today.getDate() + i);
+                    // Value for form data: "12月2日 (週一)"
+                    const formattedValue = `${d.getMonth() + 1}月${d.getDate()}日 (週${weekDays[d.getDay()]})`; 
+                    
+                    days.push({
+                        // Display for the button: "12/02" and "一"
+                        displayDate: `${d.getMonth() + 1}/${d.getDate()}`, 
+                        dayName: `週${weekDays[d.getDay()]}`,
+                        value: formattedValue
+                    });
+                }
+                return days;
+            };
+            const dates = getNextDays();
+
+            // Handlers
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({ ...prev, [field]: value }));
+            };
+
+            const generateMessage = () => {
+                const type = activeTab === 'hair' ? '除毛預約' : '美容預約';
+                let msg = `【沐林&沐靈 ${type} 預約單】\n`;
+                msg += `🎀 預約請填寫以下表格 🎀\n`;
+                msg += `姓名：${formData.name}\n`;
+                msg += `電話：${formData.phone}\n`;
+                msg += `日期/時間：${formData.date} ${formData.time} (時段越多越好)\n`;
+                msg += `施作項目：${formData.item}\n`;
+                
+                // Pregnancy Info
+                if (formData.pregnant === '是') {
+                    msg += `是否為孕媽咪/幾周：是 (${formData.pregnantWeeks}週)\n`;
+                } else {
+                    msg += `是否為孕媽咪/幾周：否\n`;
+                }
+
+                // Hair Removal Specifics
+                if (activeTab === 'hair') {
+                    msg += `除毛是否要加購私密面膜：${formData.maskAddon ? '是' : '否'} \n`;
+                    msg += `嫩白私密面膜加購 $399/片 <超強私密保養專用膜>\n`;
+                    msg += `比較怕燙更換涼感熱蠟($100/私密處)：${formData.coolingWax === '是' ? '是' : '否'}\n`;
+                }
+
+                // Notes
+                if (formData.notes) {
+                    msg += `備註欄：${formData.notes}\n`;
+                } else {
+                    msg += `備註欄：無\n`;
+                }
+                
+                // Static Warnings
+                msg += `\n📢注意\n`;
+                msg += `👉私密處除毛建議預約經期最不可能來的日期唷\n`;
+                msg += `👉除毛如本身有刮毛習慣需留長最短0.5cm，建議留1cm以上`;
+
+                return msg;
+            };
+
+            const handleCopy = () => {
+                const text = generateMessage();
+                // Use fallback for clipboard copy if navigator.clipboard is not available in iframe
+                navigator.clipboard.writeText(text).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                }).catch(err => {
+                    // Fallback using document.execCommand
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                });
+            };
+
+            const handleSubmit = () => {
+                // Simple validation for required fields
+                if(!formData.name || !formData.phone || !formData.date || !formData.item || !formData.time) {
+                    alertPlaceholder("請填寫所有欄位 (姓名、電話、日期、時間、項目)喔！", "欄位未填寫");
+                    return;
+                }
+                setShowModal(true);
+            };
+
+            // Custom Alert/Confirmation Placeholder (Instead of alert())
+            const alertPlaceholder = (message, title) => {
+                setAlertState({ show: true, message: message, title: title });
+            };
+            const [alertState, setAlertState] = useState({ show: false, message: '', title: '' });
+
+
+            return (
+                <div className="min-h-screen pb-24 relative text-slate-700">
+                    <Snowflakes />
+                    
+                    {/* Header */}
+                    <div className="pt-8 pb-4 px-6">
+                        <div className="flex justify-between items-center mb-1">
+                            <h2 className="text-sm tracking-widest text-slate-500 uppercase">WELCOME TO</h2>
+                        </div>
+                        <h1 className="text-2xl font-bold text-slate-800 tracking-wide">
+                            沐林&沐靈<span className="text-amber-400">.</span>
+                        </h1>
+                        <p className="text-xs text-slate-400 mt-1 tracking-wider">AESTHETICS STUDIO</p>
+                    </div>
+
+                    {/* Tab Switcher (Glass Panel for Minimalist Look) */}
+                    <div className="px-4 mb-6 sticky top-0 z-10 pt-2 pb-2 glass-panel mx-4 rounded-2xl shadow-md border-t border-white/50">
+                        <div className="flex bg-slate-100/50 p-1 rounded-xl relative">
+                            {/* Animated Background Slider */}
+                            <div 
+                                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-lg shadow-sm transition-all duration-300 ease-out border border-slate-200/50 ${activeTab === 'beauty' ? 'left-[calc(50%+2px)]' : 'left-1'}`}
+                            ></div>
+
+                            <button 
+                                onClick={() => { setActiveTab('hair'); setFormData(prev => ({...prev, item: ''})) }}
+                                className={`flex-1 py-2.5 text-sm font-bold relative z-10 transition-colors duration-300 flex items-center justify-center gap-2 ${activeTab === 'hair' ? 'text-slate-800' : 'text-slate-400'}`}
+                            >
+                                <Icon name="sparkles" size={14} className={activeTab === 'hair' ? 'text-amber-400' : 'text-slate-300'} />
+                                除毛客人
+                            </button>
+                            <button 
+                                onClick={() => { setActiveTab('beauty'); setFormData(prev => ({...prev, item: ''})) }}
+                                className={`flex-1 py-2.5 text-sm font-bold relative z-10 transition-colors duration-300 flex items-center justify-center gap-2 ${activeTab === 'beauty' ? 'text-slate-800' : 'text-slate-400'}`}
+                            >
+                                <Icon name="user" size={14} className={activeTab === 'beauty' ? 'text-sky-400' : 'text-slate-300'} />
+                                美容客人
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Main Form */}
+                    <div className="px-6 space-y-6">
+                        
+                        {/* Name & Phone */}
+                        <div className="grid grid-cols-1 gap-5">
+                            <InputField 
+                                label="姓名 Name" 
+                                type="text" 
+                                value={formData.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                placeholder="請輸入您的姓名"
+                            />
+                            <InputField 
+                                label="電話 Phone" 
+                                type="tel" 
+                                value={formData.phone}
+                                onChange={(e) => handleInputChange('phone', e.target.value)}
+                                placeholder="09xx-xxx-xxx"
+                            />
+                        </div>
+
+                        {/* Date Picker (Horizontal Scroll) - 增加星期幾，更清楚 */}
+                        <div>
+                            <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">日期 Date</label>
+                            <div className="flex overflow-x-auto gap-3 pb-2 -mx-6 px-6 no-scrollbar scroll-smooth">
+                                {dates.map((d, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => handleInputChange('date', d.value)}
+                                        className={`flex-shrink-0 w-24 h-20 rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 ${formData.date === d.value 
+                                            ? 'bg-slate-800 border-slate-800 text-white shadow-lg shadow-slate-200' // Navy Blue for selected
+                                            : 'bg-white border-slate-100 text-slate-400 hover:border-sky-200'}`}
+                                    >
+                                        <span className={`text-xs font-medium mb-0.5 opacity-80 ${formData.date === d.value ? 'text-slate-300' : 'text-slate-400'}`}>{d.dayName}</span>
+                                        <span className={`text-lg font-bold ${formData.date === d.value ? 'text-amber-300' : 'text-slate-800'}`}>
+                                            {d.displayDate}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Time Input */}
+                         <InputField 
+                            label="日期/時間 (時段越多越好)" 
+                            type="text" 
+                            value={formData.time}
+                            onChange={(e) => handleInputChange('time', e.target.value)}
+                            placeholder="例如：14:00、15:30、17:00 皆可 (請填寫多個時段以利預約)"
+                        />
+
+                        {/* Service Item */}
+                        <InputField 
+                            label={activeTab === 'hair' ? '施作除毛部位' : '施作美容項目'} 
+                            type="text" 
+                            value={formData.item}
+                            onChange={(e) => handleInputChange('item', e.target.value)}
+                            placeholder={activeTab === 'hair' ? "例如：私密處全除、小腿" : "例如：臉部撥筋、有氧活罐"}
+                        />
+
+                        {/* Pregnancy Check */}
+                        <div className="bg-white/60 p-4 rounded-2xl border border-white shadow-sm">
+                            <label className="block text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                                <span className="w-1 h-4 bg-amber-300 rounded-full block"></span>
+                                是否為孕媽咪/幾周：
+                            </label>
+                            <div className="flex gap-4 mb-3">
+                                {['是', '否'].map(opt => (
+                                    <label key={opt} className="flex items-center gap-2 cursor-pointer">
+                                        <input 
+                                            type="radio" 
+                                            name="pregnant" 
+                                            checked={formData.pregnant === opt}
+                                            onChange={() => handleInputChange('pregnant', opt)}
+                                            className="w-5 h-5 accent-slate-800" // Navy Blue accent
+                                        />
+                                        <span className={formData.pregnant === opt ? 'text-slate-800 font-medium' : 'text-slate-400'}>{opt}</span>
+                                    </label>
+                                ))}
+                            </div>
+                            {formData.pregnant === '是' && (
+                                <input 
+                                    type="text" 
+                                    placeholder="請問懷孕幾週？"
+                                    value={formData.pregnantWeeks}
+                                    onChange={(e) => handleInputChange('pregnantWeeks', e.target.value)}
+                                    className="w-full bg-slate-50 border-b border-slate-200 px-2 py-2 text-sm focus:outline-none focus:border-amber-400 transition-colors rounded-t"
+                                />
+                            )}
+                        </div>
+
+                        {/* Hair Removal Specifics (Conditional) */}
+                        {activeTab === 'hair' && (
+                            <div className="space-y-4 animate-fade-in">
+                                {/* Mask Add-on */}
+                                <div 
+                                    className={`p-4 rounded-2xl border transition-all duration-300 cursor-pointer ${formData.maskAddon 
+                                        ? 'bg-gradient-to-r from-slate-800 to-slate-700 border-transparent shadow-lg text-white' 
+                                        : 'bg-white border-slate-100 text-slate-600 shadow-sm'}`}
+                                    onClick={() => handleInputChange('maskAddon', !formData.maskAddon)}
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center ${formData.maskAddon ? 'bg-amber-400 border-amber-400' : 'border-slate-300'}`}>
+                                                {formData.maskAddon && <Icon name="check" size={14} color="white" />}
+                                            </div>
+                                            <div>
+                                                <div className="font-bold text-sm">除毛是否要加購私密面膜？</div>
+                                                <div className={`text-xs mt-0.5 ${formData.maskAddon ? 'text-slate-300' : 'text-slate-400'}`}>嫩白私密面膜加購 $399/片 <span className='font-semibold'>超強私密保養專用膜</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Cooling Wax (Only if private area is involved) */}
+                                <div className="bg-white/60 p-4 rounded-2xl border border-white shadow-sm">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <label className="block text-sm font-bold text-slate-700 flex items-center gap-2">
+                                            <span className="w-1 h-4 bg-sky-300 rounded-full block"></span>
+                                            比較怕燙可加購 $100 更換涼感熱蠟：
+                                        </label>
+                                        <span className="text-[10px] bg-sky-100 text-sky-600 px-2 py-0.5 rounded-full font-bold">僅針對私密處</span>
+                                    </div>
+                                    <div className="flex gap-4 pl-3">
+                                        {['是', '否'].map(opt => (
+                                            <label key={opt} className="flex items-center gap-2 cursor-pointer">
+                                                <input 
+                                                    type="radio" 
+                                                    name="coolingWax" 
+                                                    checked={formData.coolingWax === opt}
+                                                    onChange={() => handleInputChange('coolingWax', opt)}
+                                                    className="w-5 h-5 accent-sky-500" 
+                                                />
+                                                <span className={formData.coolingWax === opt ? 'text-slate-800 font-medium' : 'text-slate-400'}>{opt}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Notes */}
+                        <div>
+                            <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">備註欄 Note</label>
+                            <textarea 
+                                value={formData.notes}
+                                onChange={(e) => handleInputChange('notes', e.target.value)}
+                                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-300 transition-all shadow-sm h-20 resize-none"
+                                placeholder="請輸入您想告知的特殊需求、指定老師或任何疑問。"
+                            ></textarea>
+                        </div>
+
+                        {/* Warnings (📢注意) */}
+                        <div className="bg-sky-50/50 rounded-xl p-4 border border-sky-100/50 shadow-sm">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Icon name="info" size={16} className="text-sky-500" />
+                                <span className="text-sm font-bold text-sky-700">📢 預約提醒 (請詳閱)</span>
+                            </div>
+                            <ul className="text-xs text-sky-800/70 space-y-1.5 list-disc list-inside">
+                                <li>👉私密處除毛建議預約經期最不可能來的日期唷。</li>
+                                <li>👉除毛如本身有刮毛習慣，需留長最短 0.5cm，建議留 1cm 以上。</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Submit Button Area */}
+                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white via-white/95 to-transparent z-20">
+                         <button 
+                            onClick={handleSubmit}
+                            className="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl shadow-xl shadow-slate-300 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+                        >
+                            <span className="text-amber-300"><Icon name="sparkles" size={18} /></span>
+                            產生預約文字 (點擊複製)
+                        </button>
+                    </div>
+
+                    {/* Modal for Confirmation and Copy - 增加可愛圖案 */}
+                    {showModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fade-in">
+                            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowModal(false)}></div>
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl relative z-10 transform transition-all scale-100">
+                                {/* Cute Cloud/Sparkle Icon Block */}
+                                <div className="flex justify-center -mt-4 mb-4">
+                                    <div className="relative p-3 bg-sky-50 rounded-full border-4 border-white shadow-lg">
+                                        <div className="relative">
+                                            <Icon name="heart" size={24} color="#fcd34d" fill="#fcd34d" className="transform rotate-3" />
+                                            {/* Small sparkle overlay */}
+                                            <span className="absolute -top-1 -right-1 text-sm text-sky-300">✨</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <h3 className="text-xl font-extrabold text-slate-800 mb-1 text-center">✅ 預約單生成完畢</h3>
+                                
+                                <p className="text-xs text-slate-500 text-center mb-4 font-bold tracking-wide">
+                                    步驟：1. 點擊下方「複製文字」 2. 切換回 LINE 貼上送出！
+                                </p>
+                                
+                                {/* Generated Message Preview */}
+                                <div className="bg-slate-50 rounded-xl p-4 mb-6 text-sm text-slate-600 leading-relaxed font-mono whitespace-pre-wrap max-h-60 overflow-y-auto border border-slate-100">
+                                    {generateMessage()}
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button 
+                                        onClick={() => setShowModal(false)}
+                                        className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-500 font-medium"
+                                    >
+                                        修改
+                                    </button>
+                                    <button 
+                                        onClick={handleCopy}
+                                        className={`flex-1 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all duration-300 ${copied ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-slate-800 text-amber-300 shadow-lg shadow-slate-200'}`}
+                                    >
+                                        {copied ? (
+                                            <>
+                                                <Icon name="check" size={18} color="white" />
+                                                已複製!
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Icon name="copy" size={18} className="text-amber-300" />
+                                                複製文字
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Custom Alert Modal */}
+                    {alertState.show && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 animate-fade-in">
+                            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setAlertState({ show: false, message: '', title: '' })}></div>
+                            <div className="bg-white w-full max-w-xs rounded-2xl p-5 shadow-2xl relative z-10">
+                                <h4 className="text-lg font-bold text-slate-800 mb-2">{alertState.title}</h4>
+                                <p className="text-sm text-slate-600 mb-4">{alertState.message}</p>
+                                <button 
+                                    onClick={() => setAlertState({ show: false, message: '', title: '' })}
+                                    className="w-full bg-slate-800 text-white py-2.5 rounded-xl font-medium"
+                                >
+                                    好的
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            );
+        };
+
+        // Helper component for input fields
+        const InputField = ({ label, type, value, onChange, placeholder }) => (
+            <div>
+                <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">{label}</label>
+                {type === 'text' || type === 'tel' ? (
+                    <input 
+                        type={type} 
+                        value={value}
+                        onChange={onChange}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-300 transition-all shadow-sm"
+                        placeholder={placeholder}
+                        required
+                    />
+                ) : null}
+            </div>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+    <style>
+        /* Fade in animation for modal */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+    </style>
+</body>
+</html>
