@@ -1,286 +1,418 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沐林&沐靈美學工作室 - 預約表單</title>
-    
-    <!-- 此版本所有樣式皆已內嵌 CSS，確保排版穩定 -->
-    
-    <style>
-        /* 載入 Noto Serif TC (思源宋體) */
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Inter:wght@400;600;700&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沐林&沐靈美學工作室 - 線上預約</title>
+    
+    <!-- 最終優化版：修正顏色載入問題，確保按鈕為藍色 -->
+    
+    <style>
+        /* 載入字體 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap');
 
-        /* 全局基礎設定 - 參考五行金水 (白/藍/灰) */
-        :root {
-            --color-primary: #0d47a1; /* 深藍色 (水) */
-            --color-secondary: #1565c0; /* 中藍色 (水) */
-            --color-background-light: #F5F7FA; /* 淺白/灰 (金) */
-            --color-background-dark: #E0F7FA; /* 淺藍 (水) */
-            --color-text: #333;
-            --color-border: #b3e5fc;
-            --color-warning: #854d0e;
-        }
+        /* 顏色定義 (直接使用顏色碼，避免變數載入失敗) */
+        :root {
+            --primary: #0d47a1; /* 深藍色 (主色) */
+            --secondary: #1565c0; /* 中藍色 */
+            --bg-light: #F5F7FA; /* 淺白/灰 */
+            --bg-dark: #E0F7FA; /* 淺藍 */
+            --text-color: #333;
+            --border-color: #b3e5fc;
+            --success-color: #10b981; /* 複製成功綠色 */
+            --alert-color: #ef6c00; /* 孕媽咪黃色 */
+        }
 
-        body {
-            /* 柔和淺藍到淺白漸變背景 */
-            background: linear-gradient(to bottom, var(--color-background-light), var(--color-background-dark)); 
-            background-attachment: fixed; 
-            font-family: 'Noto Serif TC', 'Inter', sans-serif; 
-            color: var(--color-text); 
-            min-height: 100vh;
-            padding: 1rem;
-        }
-        
-        /* 響應式佈局：容器居中，最大寬度 */
-        .container-card {
-            max-width: 960px; /* max-w-4xl */
-            margin-left: auto;
-            margin-right: auto;
-            padding: 1.5rem; /* p-6 for mobile */
-            background-color: white; 
-            border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
-            border: 1px solid var(--color-background-dark);
-        }
+        body {
+            background: linear-gradient(to bottom, var(--bg-light), var(--bg-dark)); 
+            background-attachment: fixed; 
+            font-family: 'Noto Serif TC', sans-serif; 
+            color: var(--text-color); 
+            padding: 1rem;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            min-height: 100vh;
+        }
+        
+        /* 主要卡片容器 (響應式設計) */
+        .card-container {
+            width: 100%;
+            max-width: 600px; 
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: white; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); 
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
 
-        @media (min-width: 768px) {
-            .container-card {
-                padding: 2.5rem; /* p-10 for desktop */
-            }
-        }
+        /* 標題 */
+        h1 {
+            text-align: center;
+            color: #0d47a1; /* 直接使用深藍色碼 */ 
+            font-size: 2.2rem; 
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #4b5563;
+            margin-bottom: 2rem;
+        }
 
-        /* 標題區塊 */
-        .header {
-            text-align: center;
-            margin-bottom: 2.5rem; /* mb-10 */
-        }
-        
-        .title {
-            color: #1f2937; 
-            font-size: 2rem; /* text-3xl */
-            font-weight: 700;
-            margin-bottom: 0.5rem; 
-            letter-spacing: 0.05em; 
-        }
+        /* 區塊標題 */
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
 
-        @media (min-width: 768px) {
-            .title {
-                font-size: 2.25rem; /* md:text-4xl */
-            }
-        }
+        /* 按鈕容器 */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-direction: column;
+        }
+        @media (min-width: 480px) {
+            .button-group {
+                flex-direction: row; 
+            }
+        }
+        
+        /* 主要按鈕樣式 - 使用固定顏色碼 */
+        .btn {
+            background-color: #0d47a1; /* 深藍色 */ 
+            color: white;
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:hover {
+            background-color: #1565c0; /* 中藍色 */
+        }
+        /* 複製按鈕的綠色 */
+        .btn-copy {
+            background-color: var(--success-color);
+        }
+        .btn-copy:hover {
+            background-color: #059669; 
+        }
 
-        /* 項目選擇區塊 */
-        .selector-section {
-            margin-bottom: 2.5rem;
-            padding: 1rem;
-            border: 1px solid #b3e5fc; 
-            border-radius: 0.5rem; 
-        }
+        /* 表單輸入框 */
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #0d47a1; /* 深藍色 */
+            outline: none;
+        }
 
-        .selector-title {
-            font-size: 1.25rem; /* text-xl */
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        @media (min-width: 768px) {
-            .selector-title {
-                font-size: 1.5rem; /* md:text-2xl */
-            }
-        }
-        
-        .mode-selector {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        @media (min-width: 640px) {
-            .mode-selector {
-                flex-direction: row;
-            }
-        }
-        
-        /* 主要按鈕樣式 */
-        .btn-primary {
-            background-color: var(--color-primary); 
-            color: white;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--color-secondary);
-        }
-
-        /* 表單區塊 */
-        .form-section {
-            margin-top: 2rem;
-            padding: 1rem;
-            border: 1px solid #b3e5fc; 
-            border-radius: 0.5rem; 
-            background-color: #f9fafb; 
-        }
-
-        .input-group {
-            margin-bottom: 1rem;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #4b5563;
-            margin-bottom: 0.25rem;
-        }
-
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--color-border);
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus, textarea:focus {
-            outline: none;
-            border-color: #03a9f4;
-            box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.2);
-        }
-
-        /* 訊息視窗樣式 */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 50;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            max-width: 90%;
-            width: 400px;
-            text-align: center;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-    </style>
+        /* 備註區塊 */
+        .form-section {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 1.5rem;
+        }
+        
+        /* 孕媽咪提醒區塊 */
+        #pregnancy-check {
+            background-color: #fffde7;
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px dashed #fdd835;
+        }
+        #pregnancy-check label {
+            color: var(--alert-color);
+            font-weight: 600;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* 彈窗樣式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-width: 90%;
+            width: 350px;
+            text-align: center;
+        }
+        
+        #message-text-area {
+            resize: none;
+            height: 120px;
+            font-size: 0.85rem;
+            font-family: monospace; 
+            margin-bottom: 0.5rem;
+        }
+    </style>
 </head>
-<body class="p-4 md:p-8">
-    
-    <div class="container-card">
+<body>
+    
+    <div class="card-container">
 
-        <!-- 標題區塊 -->
-        <header class="header">
-            <h1 class="title">沐林&沐靈美學工作室</h1>
-            <p style="font-size: 1.25rem; font-weight: 300; color: #4b5563;">線上預約表單 (Appointment Form)</p>
-        </header>
+        <h1>沐林&沐靈美學工作室</h1>
+        <p class="subtitle">線上預約表單 (Appointment Form)</p>
 
-        <!-- 預約項目選擇區塊 -->
-        <section class="selector-section">
-            <h2 class="selector-title">請選擇預約項目</h2>
-            
-            <div id="mode-selector" class="mode-selector">
-                <!-- 熱蠟除毛按鈕 -->
-                <button 
-                    onclick="selectMode('depilation')" 
-                    class="btn-primary">
-                    熱蠟除毛預約
-                </button>
-                
-                <!-- 美學項目按鈕 -->
-                <button 
-                    onclick="selectMode('beauty')" 
-                    class="btn-primary">
-                    美學項目預約
-                </button>
-            </div>
-            
-            <p id="mode-feedback" style="text-align: center; margin-top: 1rem; font-size: 1.125rem; font-weight: 500; color: #4b5563;">請點擊上方按鈕選擇您的預約類型。</p>
-        </section>
+        <!-- 預約項目選擇區塊 -->
+        <section style="margin-bottom: 2rem;">
+            <h2>請選擇預約項目</h2>
+            
+            <div id="mode-selector" class="button-group">
+                <button onclick="selectMode('depilation')" class="btn">熱蠟除毛預約</button>
+                <button onclick="selectMode('beauty')" class="btn">美學項目預約</button>
+            </div>
+            
+            <p id="mode-feedback" style="text-align: center; font-size: 0.95rem; color: #6b7280;">請點擊上方按鈕選擇您的預約類型。</p>
+        </section>
 
-        <!-- 預約資訊表格區塊 (預設隱藏) -->
-        <section id="appointment-form" class="form-section hidden">
-            <h2 class="title" style="font-size: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #d1d5db;">預約請填寫以下表格</h2>
-            
-            <form id="line-form" onsubmit="submitForm(event)">
-                
-                <!-- 姓名 -->
-                <div class="input-group">
-                    <label for="name" class="input-label">姓名 Name</label>
-                    <input type="text" id="name" name="name" placeholder="請填寫您的姓名" required>
-                </div>
+        <!-- 預約資訊表格區塊 (預設隱藏) -->
+        <section id="appointment-form" class="form-section hidden">
+            <h2 style="border: none; margin-bottom: 1rem; color: #0d47a1; font-size: 1.5rem;">預約請填寫以下表格</h2>
+            
+            <form id="line-form" onsubmit="submitForm(event)">
+                
+                <!-- 姓名 -->
+                <div class="input-group">
+                    <label for="name">👤 姓名 Name</label>
+                    <input type="text" id="name" name="name" placeholder="請填寫您的姓名" required>
+                </div>
 
-                <!-- 電話 -->
-                <div class="input-group">
-                    <label for="phone" class="input-label">電話 Phone</label>
-                    <input type="text" id="phone" name="phone" placeholder="09XX-XXX-XXX" required>
-                </div>
+                <!-- 電話 -->
+                <div class="input-group">
+                    <label for="phone">📞 電話 Phone</label>
+                    <input type="text" id="phone" name="phone" placeholder="09XX-XXX-XXX" required>
+                </div>
 
-                <!-- 預約日期/時間 -->
-                <div class="input-group">
-                    <label for="date_time" class="input-label">日期/時間 Date/Time (時段越多越好)</label>
-                    <textarea id="date_time" name="date_time" rows="3" placeholder="e.g. 1/15 (五) 14:00 或 15:30；1/16 (六) 早上" required></textarea>
-                </div>
-                
-                <!-- 施作項目/部位 (根據模式切換內容) -->
-                <div id="service-input" class="input-group">
-                    <!-- JavaScript 會在這裡插入對應的欄位內容 -->
-                </div>
+                <!-- 預約日期/時間 -->
+                <div class="input-group">
+                    <label for="date_time">🗓️ 預約日期/時間 (時段越多越好)</label>
+                    <textarea id="date_time" name="date_time" rows="3" placeholder="e.g. 1/15 (五) 14:00 或 15:30；1/16 (六) 早上" required></textarea>
+                </div>
+                
+                <!-- 施作項目/部位 (切換內容) -->
+                <div id="service-input" class="input-group">
+                    <!-- JS 插入內容 -->
+                </div>
 
-                <!-- 是否為孕媽咪 -->
-                <div id="pregnancy-check" class="input-group hidden" style="padding: 1rem; background-color: #fffbe6; border: 1px solid #fde68a; border-radius: 0.5rem; margin-top: 1.5rem;">
-                    <div style="display: flex; align-items: center;">
-                        <input type="checkbox" id="is_pregnant" name="is_pregnant" style="height: 1rem; width: 1rem; color: var(--color-primary); border-radius: 0.25rem;">
-                        <label for="is_pregnant" style="margin-left: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--color-warning);">
-                            是否為孕媽咪？ (很重要，請如實告知)
-                        </label>
-                    </div>
-                </div>
+                <!-- 是否為孕媽咪 (特殊提醒) -->
+                <div id="pregnancy-check" class="input-group hidden">
+                    <input type="checkbox" id="is_pregnant" name="is_pregnant" style="margin-right: 0.5rem;">
+                    <label for="is_pregnant" style="display: inline; font-size: 0.9rem;">
+                        是否為孕媽咪？ (很重要，請如實告知)
+                    </label>
+                </div>
 
-                <!-- 備註 -->
-                <div class="input-group" style="margin-top: 1.5rem;">
-                    <label for="notes" class="input-label">備註 Notes</label>
-                    <textarea id="notes" name="notes" rows="4" placeholder="e.g. 第一次除毛/其他皮膚狀況/疑問需求" ></textarea>
-                </div>
+                <!-- 備註 -->
+                <div class="input-group" style="margin-top: 1.5rem;">
+                    <label for="notes">📝 備註 Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="e.g. 第一次除毛/其他皮膚狀況/疑問需求" ></textarea>
+                </div>
 
-                <!-- 提交按鈕 -->
-                <button type="submit" id="submit-btn" class="btn-primary" style="margin-top: 1.5rem; font-size: 1.25rem; font-weight: 600;">
-                    點此發送預約訊息至 Line
-                </button>
-            </form>
-        </section>
+                <!-- 提交按鈕 -->
+                <button type="submit" id="submit-btn" class="btn" style="width: 100%; margin-top: 1.5rem; font-size: 1.25rem;">
+                    點此發送預約訊息至 Line
+                </button>
+            </form>
+        </section>
 
-        <!-- 訊息彈出視窗 (用於替代 alert()) -->
-        <div id="message-modal" class="modal hidden">
-            <div class="modal-content">
-                <h3 id="modal-title" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-primary);">訊息已生成</h3>
-                <p id="modal-content-text" style="margin-bottom: 1rem; color: #4b5563;">
-                    請點擊下方按鈕<strong style="color: var(--color-primary);">一鍵複製</strong>，並手動貼上發送至 Line 官方帳號。
-                </p>
-                <!-- 顯示生成的訊息 -->
-                <textarea id="message-text-area" rows="8" readonly style="width: 100%; border: 1px solid #ccc; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.875rem; margin-bottom: 1rem;"></textarea>
-                
-                <!-- 新增複製按鈕 -->
-                <button onclick="copyMessage()" class="btn-primary" style="width: 100%; padding: 0.5rem 1re
+        <!-- 訊息彈出視窗 -->
+        <div id="message-modal" class="modal hidden" onclick="closeModal(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <h3 id="modal-title" style="font-size: 1.15rem; color: #0d47a1; margin-bottom: 0.5rem;">訊息已生成</h3>
+                <p id="modal-content-text" style="font-size: 0.9rem; color: #4b5563; margin-bottom: 1rem;">
+                    請點擊下方按鈕<strong style="color: #0d47a1;">一鍵複製</strong>，並手動貼上發送至 Line 官方帳號。
+                </p>
+                
+                <textarea id="message-text-area" rows="8" readonly></textarea>
+                
+                <!-- 複製按鈕 -->
+                <button onclick="copyMessage()" class="btn btn-copy" style="width: 100%; margin-bottom: 0.5rem; font-weight: 600;">
+                    ✅ 複製預約訊息 (點擊我)
+                </button>
+                
+                <!-- 關閉按鈕 -->
+                <button onclick="closeModal()" class="btn" style="width: 100%; background-color: #6b7280; font-size: 1rem;">
+                    完成 (點擊我)
+                </button>
+                
+                <!-- 複製成功的提示訊息 -->
+                <p id="copy-feedback" style="color: var(--success-color); font-weight: 600; margin-top: 0.5rem; display: none; font-size: 0.9rem;">複製成功！</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentMode = '';
+
+        // 設置不同模式下的輸入欄位內容
+        const serviceContents = {
+            depilation: `
+                <label for="service_depilation">✨ 熱蠟除毛 - 施作部位</label>
+                <textarea id="service_depilation" name="service" rows="3" placeholder="e.g. 全腿、腋下、私密處 VIO (請註明有無做過)" required></textarea>
+            `,
+            beauty: `
+                <label for="service_beauty">✨ 美學項目 - 施作項目/需求</label>
+                <textarea id="service_beauty" name="service" rows="3" placeholder="e.g. 臉部撥筋、有氧活罐、靈氣療癒、客製手鍊、泌乳諮詢" required></textarea>
+            `
+        };
+
+        const formSection = document.getElementById('appointment-form');
+        const serviceInputDiv = document.getElementById('service-input');
+        const modeFeedback = document.getElementById('mode-feedback');
+        const pregnancyCheck = document.getElementById('pregnancy-check');
+
+        // 選擇預約模式
+        function selectMode(mode) {
+            currentMode = mode;
+            formSection.classList.remove('hidden');
+            serviceInputDiv.innerHTML = serviceContents[mode];
+            modeFeedback.textContent = (mode === 'depilation') 
+                ? '您已選擇：熱蠟除毛預約。請填寫下方表格。'
+                : '您已選擇：美學項目預約。請填寫下方表格。';
+            
+            // 只有除毛/美容項目顯示孕媽咪確認框
+            if (mode === 'depilation' || mode === 'beauty') {
+                pregnancyCheck.classList.remove('hidden');
+            } else {
+                pregnancyCheck.classList.add('hidden');
+            }
+        }
+
+        // 提交表單 - 產生訊息並顯示彈窗
+        function submitForm(event) {
+            event.preventDefault(); 
+            
+            if (!currentMode) { return; }
+
+            // 收集表單資料
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const dateTime = document.getElementById('date_time').value.trim();
+            const serviceInput = document.querySelector('[name="service"]');
+            const service = serviceInput ? serviceInput.value.trim() : '';
+            const notes = document.getElementById('notes').value.trim();
+            const isPregnant = document.getElementById('is_pregnant').checked ? "是" : "否";
+            
+            // 建立訊息內容
+            let message = `【沐林&沐靈 美學工作室 - 線上預約單】\n`;
+            message += `----------------------------------\n`;
+            message += `✅ 預約類型: ${(currentMode === 'depilation' ? '熱蠟除毛' : '美學項目')}\n`;
+            message += `👤 姓名: ${name}\n`;
+            message += `📞 電話: ${phone}\n`;
+            message += `🗓️ 預約時段: ${dateTime}\n`;
+            message += `🌟 施作項目/需求: ${service}\n`;
+
+            if (currentMode === 'depilation' || currentMode === 'beauty') {
+                 message += `🤰 孕媽咪: ${isPregnant}\n`;
+            }
+            
+            if (notes) {
+                message += `📝 備註: ${notes}\n`;
+            } else {
+                message += `📝 備註: (無)\n`;
+            }
+            message += `----------------------------------\n`;
+            message += `請將此訊息發送給工作室 Line 官方帳號。`;
+            
+            // 設置到 textarea 並顯示彈窗
+            document.getElementById('message-text-area').value = message;
+            document.getElementById('copy-feedback').style.display = 'none'; 
+            showModal();
+        }
+
+        // 複製訊息到剪貼簿 (優先使用現代 API)
+        function copyMessage() {
+            const message = document.getElementById('message-text-area').value;
+            const feedback = document.getElementById('copy-feedback');
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                // 現代瀏覽器/手機支援
+                navigator.clipboard.writeText(message).then(() => {
+                    feedback.textContent = '✅ 複製成功！請至 Line 貼上。';
+                    feedback.style.display = 'block';
+                }).catch(err => {
+                    // 失敗退回傳統方法
+                    fallbackCopyMessage();
+                });
+            } else {
+                // 傳統方法
+                fallbackCopyMessage();
+            }
+        }
+
+        // 傳統複製方法 (用於相容性)
+        function fallbackCopyMessage() {
+            const textArea = document.getElementById('message-text-area');
+            const feedback = document.getElementById('copy-feedback');
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                feedback.textContent = '✅ 複製成功！請至 Line 貼上。';
+                feedback.style.display = 'block';
+            } catch (err) {
+                feedback.textContent = '❌ 複製失敗，請手動選取訊息內容。';
+                feedback.style.display = 'block';
+            }
+        }
+
+        // 顯示彈出視窗
+        function showModal() {
+            document.getElementById('message-modal').classList.remove('hidden');
+        }
+
+        // 關閉彈出視窗
+        function closeModal() {
+            document.getElementById('message-modal').classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
