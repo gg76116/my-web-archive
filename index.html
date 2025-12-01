@@ -1,176 +1,224 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>沐林&沐靈美學 - 預約表單</title>
-    <!-- 載入 Tailwind CSS CDN -->
+    <title>沐林&沐靈美學工作室 - 預約表單</title>
+
+    <!-- 載入 Tailwind CDN 以使用其類別 (CSS 會被內嵌) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        /* UPDATED: 載入 Noto Serif TC (思源宋體，提供類似源雲明體的典雅效果) 和 Inter */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Serif+TC:wght@400;700&display=swap');
-        
-        /* UPDATED: 設定主要字體為 Noto Serif TC (優雅的明體/宋體風格) */
+        /* 載入 Noto Serif TC (思源宋體)，提供優雅的明體/宋體感覺 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Inter:wght@400;600;700&display=swap');
+
+        /* 設定主要字體為 Noto Serif TC (優雅的明體/宋體風格) */
         body {
-            /* Noto Serif TC (思源宋體) 提供優雅的明體/宋體效果，更符合美學工作室的典雅質感 */
+            /* 柔和淺藍底色，符合您「金」與「水」的五行設計：純白 (F5F7FA) 到淺藍 (E0F7FA) */
+            background: linear-gradient(to bottom, #F5F7FA, #E0F7FA); 
+            background-attachment: fixed; 
             font-family: 'Noto Serif TC', 'Inter', sans-serif; 
-            /* 柔和淺藍漸變：從純白 (#FFFFFF) 到極淺天藍 (#E0F7FA)，非常乾淨 */
-            background: linear-gradient(to bottom, #FFFFFF, #E0F7FA);
-            background-attachment: fixed; /* 讓背景固定，滾動時更像App */
+            color: #333; /* 深灰文字，符合「水」的元素 */
         }
         
-        /* 隱藏橫向滑動條，維持 App 的視覺簡潔性 */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+        .container-card {
+            /* 圓角和陰影，提升質感 */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0f7fa; /* 淺藍邊框 */
         }
-        .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+        
+        /* 標題樣式優化 */
+        .title {
+            color: #1f2937; /* 深色文字，增加專業感 */
+            letter-spacing: 0.05em; /* 字距微調 */
+        }
+        
+        /* 輸入框樣式優化 */
+        input[type="text"], textarea {
+            border: 1px solid #b3e5fc; /* 淺藍色邊框 */
+            transition: all 0.3s ease;
+        }
+
+        /* 輸入框聚焦時的樣式 */
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #03a9f4; /* 亮藍色聚焦效果 */
+            box-shadow: 0 0 0 3px rgba(3, 169, 244, 0.2);
+        }
+
+        /* 按鈕樣式 (深藍色/水元素) */
+        .btn-primary {
+            background-color: #0d47a1; /* 深藍色 */
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #1565c0; /* 滑鼠經過時變亮藍色 */
         }
     </style>
 </head>
-<body class="p-4 sm:p-6">
+<body class="min-h-screen p-4 md:p-8">
+    <!-- 外層容器：確保在手機上也能全寬顯示 -->
+    <div class="container-card max-w-4xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-lg">
 
-    <div id="app" class="max-w-xl mx-auto">
-        
-        <!-- Header - 海軍藍強調品牌 -->
-        <header class="text-center mb-6 pt-4">
-            <h1 class="text-3xl font-extrabold text-blue-900 mb-1">
-                沐林&沐靈美學工作室
-            </h1>
-            <p class="text-lg text-sky-600 font-semibold">
-                線上預約表單 (Appointment Form)
-            </p>
+        <!-- 標題區塊 -->
+        <header class="text-center mb-10">
+            <h1 class="title text-3xl md:text-4xl font-bold mb-2">沐林&沐靈美學工作室</h1>
+            <p class="text-xl md:text-2xl font-light text-gray-600">線上預約表單 (Appointment Form)</p>
         </header>
 
-        <!-- 橫向滑動選單 (App Style) -->
-        <section class="mb-6">
-            <h2 class="text-sm font-semibold text-gray-500 mb-2">請選擇預約項目</h2>
-            <div id="mode-selector" class="flex overflow-x-scroll space-x-3 pb-3 scrollbar-hide">
+        <!-- 預約項目選擇區塊 -->
+        <section class="mb-10 p-4 border border-blue-100 rounded-lg">
+            <h2 class="text-xl md:text-2xl font-semibold mb-6 pb-2 border-b border-gray-200">請選擇預約項目</h2>
+            
+            <div id="mode-selector" class="flex flex-col sm:flex-row gap-4 justify-center">
+                <!-- 熱蠟除毛按鈕 (深藍色，水元素) -->
                 <button 
-                    data-mode="hair_removal"
-                    class="mode-btn px-5 py-3 rounded-xl font-bold transition-all duration-300 flex-shrink-0 text-base shadow-sm"
-                >
+                    onclick="selectMode('depilation')" 
+                    class="btn-primary w-full sm:w-1/2 py-3 rounded-lg text-lg font-medium shadow-md">
                     熱蠟除毛預約
                 </button>
+                
+                <!-- 美容項目按鈕 (深藍色，水元素) -->
                 <button 
-                    data-mode="beauty"
-                    class="mode-btn px-5 py-3 rounded-xl font-bold transition-all duration-300 flex-shrink-0 text-base shadow-sm"
-                >
-                    美容項目預約
+                    onclick="selectMode('beauty')" 
+                    class="btn-primary w-full sm:w-1/2 py-3 rounded-lg text-lg font-medium shadow-md">
+                    美學項目預約
                 </button>
             </div>
+            
+            <p id="mode-feedback" class="text-center mt-4 text-lg font-medium text-gray-700">請點擊上方按鈕選擇您的預約類型。</p>
         </section>
 
-        <!-- Form Card - 極簡白色卡片 -->
-        <main class="bg-white p-6 rounded-2xl shadow-lg border border-sky-100">
-            <h3 class="text-xl font-bold mb-5 text-blue-900 border-l-4 border-sky-300 pl-3">
-                預約請填寫以下表格
-            </h3>
-
-            <div id="form-container" class="space-y-5">
-                <!-- Name -->
-                <div class="input-group">
+        <!-- 預約資訊表格區塊 (預設隱藏) -->
+        <section id="appointment-form" class="mt-8 hidden p-4 border border-blue-200 rounded-lg bg-gray-50">
+            <h2 class="title text-2xl font-semibold mb-6 pb-2 border-b border-gray-300">預約請填寫以下表格</h2>
+            
+            <form id="line-form" onsubmit="submitForm(event)">
+                
+                <!-- 姓名 -->
+                <div class="input-group mb-4">
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名 Name</label>
-                    <input type="text" id="name" name="name" placeholder="請填寫您的姓名"
-                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
-                        oninput="updateMessage()">
+                    <input type="text" id="name" name="name" placeholder="請填寫您的姓名" required class="w-full p-3 rounded-lg focus:ring-2 focus:ring-blue-400">
                 </div>
 
-                <!-- Phone -->
-                <div class="input-group">
+                <!-- 電話 -->
+                <div class="input-group mb-4">
                     <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">電話 Phone</label>
-                    <input type="tel" id="phone" name="phone" placeholder="09XX-XXX-XXX"
-                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
-                        oninput="updateMessage()">
+                    <input type="text" id="phone" name="phone" placeholder="09XX-XXX-XXX" required class="w-full p-3 rounded-lg focus:ring-2 focus:ring-blue-400">
                 </div>
 
-                <!-- Date/Time -->
-                <div class="input-group">
+                <!-- 預約日期/時間 -->
+                <div class="input-group mb-4">
                     <label for="date_time" class="block text-sm font-medium text-gray-700 mb-1">日期/時間 Date/Time (時段越多越好)</label>
-                    <input type="text" id="date_time" name="date_time" placeholder="e.g. 1/15 (五) 14:00 或 1/16 (六) 10:00"
-                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
-                        oninput="updateMessage()">
+                    <textarea id="date_time" name="date_time" rows="3" placeholder="e.g. 1/15 (五) 14:00 或 15:30；1/16 (六) 早上" required class="w-full p-3 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
+                </div>
+                
+                <!-- 施作項目/部位 (根據模式切換內容) -->
+                <div id="service-input" class="input-group mb-4">
+                    <!-- JavaScript 會在這裡插入對應的欄位內容 -->
                 </div>
 
-                <!-- Service/Area (Dynamic Label) -->
-                <div class="input-group">
-                    <label id="service-label" for="service" class="block text-sm font-medium text-gray-700 mb-1">施作項目/部位</label>
-                    <input type="text" id="service" name="service" placeholder=""
-                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
-                        oninput="updateMessage()">
-                </div>
-
-                <!-- Pregnancy Checkbox - 藍色主題與精靈圖標 -->
-                <div class="p-4 rounded-xl border border-sky-200 bg-sky-50 transition duration-150">
-                    <div class="flex items-center justify-between">
-                        <label for="is_pregnant" class="flex items-center space-x-2 text-sm font-medium text-blue-700 cursor-pointer">
-                            <!-- 可愛藍色星芒/精靈圖標 (保留此處圖標，代表孕媽咪的特別服務) -->
-                            <svg class="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/></svg>
-                            
-                            <input type="checkbox" id="is_pregnant" name="is_pregnant"
-                                class="form-checkbox h-5 w-5 text-sky-500 rounded border-gray-300 focus:ring-sky-500"
-                                onchange="togglePregnancyWeeks(); updateMessage()">
-                            <span class="font-bold">是否為孕媽咪？</span>
+                <!-- 是否為孕媽咪 (針對除毛/美容) -->
+                <div id="pregnancy-check" class="input-group mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg hidden">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="is_pregnant" name="is_pregnant" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label for="is_pregnant" class="ml-2 block text-sm font-medium text-gray-800">
+                            是否為孕媽咪？ (很重要，請如實告知)
                         </label>
-                        <div id="weeks_group" class="ml-4 w-1/2" style="display: none;">
-                             <label for="weeks" class="block text-xs font-medium text-sky-600 mb-1">請填寫週數 (Weeks)</label>
-                            <input type="number" id="weeks" name="weeks" placeholder="e.g. 25"
-                                class="w-full p-2 border border-sky-300 rounded-lg text-sm focus:ring-sky-500 focus:border-sky-500"
-                                oninput="updateMessage()">
-                        </div>
                     </div>
                 </div>
 
-
-                <!-- Hair Removal Add-ons (Dynamic) -->
-                <div id="addon-section" class="space-y-4" style="display: none;">
-                    
-                    <!-- Mask Add-on -->
-                    <div class="p-4 rounded-xl border border-sky-200 bg-sky-50">
-                        <h4 class="text-sm font-medium text-blue-900 mb-2">除毛加購私密面膜？</h4>
-                        <p class="text-xs text-sky-600 mb-3">嫩白私密面膜加購 $399/片 <超強私密保養專用膜></p>
-                        <div class="flex space-x-4" onchange="updateMessage()">
-                            <label class="flex items-center space-x-2">
-                                <input type="radio" name="mask_addon" value="yes" class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
-                                <span class="text-sm text-gray-700">是</span>
-                            </label>
-                            <label class="flex items-center space-x-2">
-                                <input type="radio" name="mask_addon" value="no" checked class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
-                                <span class="text-sm text-gray-700">否</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Cool Wax Add-on -->
-                    <div class="p-4 rounded-xl border border-sky-200 bg-sky-50">
-                        <h4 class="text-sm font-medium text-blue-900 mb-2">加購涼感熱蠟？</h4>
-                        <p class="text-xs text-sky-600 mb-3">比較怕燙的寶貝們可加購 $100 更換涼感熱蠟 <只有針對私密處></p>
-                        <div class="flex space-x-4" onchange="updateMessage()">
-                            <label class="flex items-center space-x-2">
-                                <input type="radio" name="cool_wax_addon" value="yes" class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
-                                <span class="text-sm text-gray-700">是</span>
-                            </label>
-                            <label class="flex items-center space-x-2">
-                                <input type="radio" name="cool_wax_addon" value="no" checked class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
-                                <span class="text-sm text-gray-700">否</span>
-                            </label>
-                        </div>
-                    </div>
+                <!-- 備註 -->
+                <div class="input-group mb-6">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">備註 Notes</label>
+                    <textarea id="notes" name="notes" rows="4" placeholder="e.g. 第一次除毛/其他皮膚狀況/疑問需求" class="w-full p-3 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
                 </div>
 
-                <!-- Notes -->
-                <div class="input-group">
-                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">備註欄 Notes</label>
-                    <textarea id="notes" name="notes" rows="3" placeholder="e.g. 第一次除毛/其他皮膚敏感問題"
-                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
-                        oninput="updateMessage()"></textarea>
-                </div>
+                <!-- 提交按鈕 -->
+                <button type="submit" id="submit-btn" class="btn-primary w-full py-3 rounded-lg text-xl font-semibold shadow-md hover:shadow-lg">
+                    點此發送預約訊息至 Line
+                </button>
+            </form>
+        </section>
+
+        <!-- 訊息彈出視窗 (用於替代 alert()) -->
+        <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center hidden">
+            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full text-center">
+                <h3 id="modal-title" class="text-xl font-bold mb-4 text-blue-600">訊息已發送</h3>
+                <p id="modal-content" class="mb-6 text-gray-700">請前往 Line 官方帳號查看。</p>
+                <button onclick="closeModal()" class="btn-primary py-2 px-4 rounded-lg font-medium">確定</button>
             </div>
+        </div>
 
-            <!-- Generated Message Output -->
-            <div class="mt-8 p-4 bg-sky-50 rounded-xl border border-sky-300">
-                <h4 class="text-sm font-bold text-sky-700 mb-2 flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    複製傳送的訊息內容 (請檢查內容是否正確)
-                </h4>
+    </div>
+
+    <script>
+        let currentMode = '';
+
+        // 設置不同模式下的輸入欄位內容
+        const serviceContents = {
+            depilation: `
+                <label for="service_depilation" class="block text-sm font-medium text-gray-700 mb-1">熱蠟除毛 - 施作部位</label>
+                <textarea id="service_depilation" name="service" rows="3" placeholder="e.g. 全腿、腋下、私密處 VIO (請註明有無做過)" required class="w-full p-3 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
+            `,
+            beauty: `
+                <label for="service_beauty" class="block text-sm font-medium text-gray-700 mb-1">美學項目 - 施作項目/需求</label>
+                <textarea id="service_beauty" name="service" rows="3" placeholder="e.g. 臉部撥筋、有氧活罐、靈氣療癒、客製手鍊、泌乳諮詢" required class="w-full p-3 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
+            `
+        };
+
+        const formSection = document.getElementById('appointment-form');
+        const serviceInputDiv = document.getElementById('service-input');
+        const modeFeedback = document.getElementById('mode-feedback');
+        const pregnancyCheck = document.getElementById('pregnancy-check');
+
+        // 選擇預約模式
+        function selectMode(mode) {
+            currentMode = mode;
+            formSection.classList.remove('hidden');
+            serviceInputDiv.innerHTML = serviceContents[mode];
+            modeFeedback.textContent = (mode === 'depilation') 
+                ? '您已選擇：熱蠟除毛預約。請填寫下方表格。'
+                : '您已選擇：美學項目預約。請填寫下方表格。';
+            
+            // 只有除毛/美容項目顯示孕媽咪確認框
+            if (mode === 'depilation' || mode === 'beauty') {
+                pregnancyCheck.classList.remove('hidden');
+            } else {
+                pregnancyCheck.classList.add('hidden');
+            }
+        }
+
+        // 提交表單
+        function submitForm(event) {
+            event.preventDefault(); 
+            
+            if (!currentMode) {
+                alert('請先選擇預約項目！');
+                return;
+            }
+
+            // 收集表單資料
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const dateTime = document.getElementById('date_time').value.trim();
+            const service = document.querySelector('[name="service"]').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            const isPregnant = document.getElementById('is_pregnant').checked ? "是" : "否";
+            
+            // 建立訊息內容
+            let message = `【沐林&沐靈 美學工作室 - 預約單】\n`;
+            message += `---------------------------------\n`;
+            message += `✅ 預約類型: ${(currentMode === 'depilation' ? '熱蠟除毛' : '美學項目')}\n`;
+            message += `👤 姓名: ${name}\n`;
+            message += `📞 電話: ${phone}\n`;
+            message += `🗓️ 預約時段 (多選): ${dateTime}\n`;
+            message += `🌟 施作項目/需求: ${service}\n`;
+
+            if (currentMode === 'depilation' || currentMode === 'beauty') {
+                 message += `🤰 孕媽咪: ${isPregnant}\n`;
+            }
+            
+            if (notes) {
