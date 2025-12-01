@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沐林&沐靈美學 - 預約表單</title>
+    <!-- 載入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* UPDATED: 載入 Noto Serif TC (思源宋體，提供類似源雲明體的典雅效果) 和 Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Serif+TC:wght@400;700&display=swap');
+        
+        /* UPDATED: 設定主要字體為 Noto Serif TC (優雅的明體/宋體風格) */
+        body {
+            /* Noto Serif TC (思源宋體) 提供優雅的明體/宋體效果，更符合美學工作室的典雅質感 */
+            font-family: 'Noto Serif TC', 'Inter', sans-serif; 
+            /* 柔和淺藍漸變：從純白 (#FFFFFF) 到極淺天藍 (#E0F7FA)，非常乾淨 */
+            background: linear-gradient(to bottom, #FFFFFF, #E0F7FA);
+            background-attachment: fixed; /* 讓背景固定，滾動時更像App */
+        }
+        
+        /* 隱藏橫向滑動條，維持 App 的視覺簡潔性 */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6">
+
+    <div id="app" class="max-w-xl mx-auto">
+        
+        <!-- Header - 海軍藍強調品牌 -->
+        <header class="text-center mb-6 pt-4">
+            <h1 class="text-3xl font-extrabold text-blue-900 mb-1">
+                沐林&沐靈美學工作室
+            </h1>
+            <p class="text-lg text-sky-600 font-semibold">
+                線上預約表單 (Appointment Form)
+            </p>
+        </header>
+
+        <!-- 橫向滑動選單 (App Style) -->
+        <section class="mb-6">
+            <h2 class="text-sm font-semibold text-gray-500 mb-2">請選擇預約項目</h2>
+            <div id="mode-selector" class="flex overflow-x-scroll space-x-3 pb-3 scrollbar-hide">
+                <button 
+                    data-mode="hair_removal"
+                    class="mode-btn px-5 py-3 rounded-xl font-bold transition-all duration-300 flex-shrink-0 text-base shadow-sm"
+                >
+                    熱蠟除毛預約
+                </button>
+                <button 
+                    data-mode="beauty"
+                    class="mode-btn px-5 py-3 rounded-xl font-bold transition-all duration-300 flex-shrink-0 text-base shadow-sm"
+                >
+                    美容項目預約
+                </button>
+            </div>
+        </section>
+
+        <!-- Form Card - 極簡白色卡片 -->
+        <main class="bg-white p-6 rounded-2xl shadow-lg border border-sky-100">
+            <h3 class="text-xl font-bold mb-5 text-blue-900 border-l-4 border-sky-300 pl-3">
+                預約請填寫以下表格
+            </h3>
+
+            <div id="form-container" class="space-y-5">
+                <!-- Name -->
+                <div class="input-group">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名 Name</label>
+                    <input type="text" id="name" name="name" placeholder="請填寫您的姓名"
+                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
+                        oninput="updateMessage()">
+                </div>
+
+                <!-- Phone -->
+                <div class="input-group">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">電話 Phone</label>
+                    <input type="tel" id="phone" name="phone" placeholder="09XX-XXX-XXX"
+                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
+                        oninput="updateMessage()">
+                </div>
+
+                <!-- Date/Time -->
+                <div class="input-group">
+                    <label for="date_time" class="block text-sm font-medium text-gray-700 mb-1">日期/時間 Date/Time (時段越多越好)</label>
+                    <input type="text" id="date_time" name="date_time" placeholder="e.g. 1/15 (五) 14:00 或 1/16 (六) 10:00"
+                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
+                        oninput="updateMessage()">
+                </div>
+
+                <!-- Service/Area (Dynamic Label) -->
+                <div class="input-group">
+                    <label id="service-label" for="service" class="block text-sm font-medium text-gray-700 mb-1">施作項目/部位</label>
+                    <input type="text" id="service" name="service" placeholder=""
+                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
+                        oninput="updateMessage()">
+                </div>
+
+                <!-- Pregnancy Checkbox - 藍色主題與精靈圖標 -->
+                <div class="p-4 rounded-xl border border-sky-200 bg-sky-50 transition duration-150">
+                    <div class="flex items-center justify-between">
+                        <label for="is_pregnant" class="flex items-center space-x-2 text-sm font-medium text-blue-700 cursor-pointer">
+                            <!-- 可愛藍色星芒/精靈圖標 (保留此處圖標，代表孕媽咪的特別服務) -->
+                            <svg class="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"/></svg>
+                            
+                            <input type="checkbox" id="is_pregnant" name="is_pregnant"
+                                class="form-checkbox h-5 w-5 text-sky-500 rounded border-gray-300 focus:ring-sky-500"
+                                onchange="togglePregnancyWeeks(); updateMessage()">
+                            <span class="font-bold">是否為孕媽咪？</span>
+                        </label>
+                        <div id="weeks_group" class="ml-4 w-1/2" style="display: none;">
+                             <label for="weeks" class="block text-xs font-medium text-sky-600 mb-1">請填寫週數 (Weeks)</label>
+                            <input type="number" id="weeks" name="weeks" placeholder="e.g. 25"
+                                class="w-full p-2 border border-sky-300 rounded-lg text-sm focus:ring-sky-500 focus:border-sky-500"
+                                oninput="updateMessage()">
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Hair Removal Add-ons (Dynamic) -->
+                <div id="addon-section" class="space-y-4" style="display: none;">
+                    
+                    <!-- Mask Add-on -->
+                    <div class="p-4 rounded-xl border border-sky-200 bg-sky-50">
+                        <h4 class="text-sm font-medium text-blue-900 mb-2">除毛加購私密面膜？</h4>
+                        <p class="text-xs text-sky-600 mb-3">嫩白私密面膜加購 $399/片 <超強私密保養專用膜></p>
+                        <div class="flex space-x-4" onchange="updateMessage()">
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="mask_addon" value="yes" class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
+                                <span class="text-sm text-gray-700">是</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="mask_addon" value="no" checked class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
+                                <span class="text-sm text-gray-700">否</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Cool Wax Add-on -->
+                    <div class="p-4 rounded-xl border border-sky-200 bg-sky-50">
+                        <h4 class="text-sm font-medium text-blue-900 mb-2">加購涼感熱蠟？</h4>
+                        <p class="text-xs text-sky-600 mb-3">比較怕燙的寶貝們可加購 $100 更換涼感熱蠟 <只有針對私密處></p>
+                        <div class="flex space-x-4" onchange="updateMessage()">
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="cool_wax_addon" value="yes" class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
+                                <span class="text-sm text-gray-700">是</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="cool_wax_addon" value="no" checked class="form-radio h-4 w-4 text-sky-500 focus:ring-sky-500">
+                                <span class="text-sm text-gray-700">否</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="input-group">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">備註欄 Notes</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="e.g. 第一次除毛/其他皮膚敏感問題"
+                        class="w-full p-3 border border-gray-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 transition duration-150 text-gray-800"
+                        oninput="updateMessage()"></textarea>
+                </div>
+            </div>
+
+            <!-- Generated Message Output -->
+            <div class="mt-8 p-4 bg-sky-50 rounded-xl border border-sky-300">
+                <h4 class="text-sm font-bold text-sky-700 mb-2 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    複製傳送的訊息內容 (請檢查內容是否正確)
+                </h4>
